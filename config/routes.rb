@@ -1,14 +1,25 @@
 Rails.application.routes.draw do
-  get 'sessions/create'
-  get 'sessions/destroy'
-  resources :ratings
-  resources :comments
-  resources :books
-  resources :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # routes for sessions controller
+  get '/login', to: 'sessions#new'
+  post '/login', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
+  
+  # routes for users controller
+  get '/signup', to: 'users#new'
+  post '/signup', to: 'users#create'
+  get '/users', to: 'users#index', as: 'users'
+  get '/users/:id', to: 'users#show', as: 'user'
+  get '/users/:id/edit', to: 'users#edit', as: 'edit_user'
+  patch '/users/:id', to: 'users#update'
+  delete '/users/:id', to: 'users#destroy'
 
-  # Defines the root path route ("/")
-  # root "articles#index"
-  post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
+  # routes for books controller
+  resources :books, except: [:index]
+
+  # routes for comments controller
+  resources :comments, only: [:create, :destroy]
+
+  # routes for ratings controller
+  resources :ratings, only: [:create]
 end
+
