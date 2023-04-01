@@ -13,13 +13,21 @@ Rails.application.routes.draw do
   patch '/users/:id', to: 'users#update'
   delete '/users/:id', to: 'users#destroy'
 
-  # routes for books controller
-  resources :books, except: [:index]
+  get '/books', to: 'books#index'
+  get '/books/new', to: 'books#new'
+  post '/books', to: 'books#create'
+  get '/books/:id', to: 'books#show', as: 'book'
+  get '/books/:id/edit', to: 'books#edit', as: 'edit_book'
+  patch '/books/:id', to: 'books#update'
+  put '/books/:id', to: 'books#update'
+  delete '/books/:id', to: 'books#destroy'
 
-  # routes for comments controller
-  resources :comments, only: [:create, :destroy]
+  post '/books/:book_id/comments', to: 'comments#create', as: 'book_comments'
+  delete '/comments/:id', to: 'comments#destroy', as: 'comment'
 
-  # routes for ratings controller
-  resources :ratings, only: [:create]
+  post '/books/:book_id/ratings', to: 'ratings#create', as: 'book_ratings'
+  patch '/ratings/:id', to: 'ratings#update', as: 'rating'
+  delete '/ratings/:id', to: 'ratings#destroy'
+
+  
 end
-

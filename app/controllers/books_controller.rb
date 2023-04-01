@@ -1,52 +1,59 @@
 class BooksController < ApplicationController
-    before_action :require_login, only: [:new, :create, :edit, :update, :destroy]
+  before_action :require_login, only: [:new, :create, :edit, :update, :destroy]
+
+  def index
+    books = Book.includes(:comments, :user)
+    render json: books.as_json(include: { 
+      comments: { 
+        include: { user: { only: [:username] } } 
+      }, 
+      user: { only: [:username] }
+    })
+  end
   
-    def index
-      @books = Book.all
+  def show
+    book = Book.includes(:comments, :user).find(params[:id])
+    render json: book.as_json(include: { comments: { include: { user: { only: [:username] } } }, user: { only: [:username] } })
+  end
+
+  def new
+    @book = Book.new
+    render json: @book
+  end
+
+  def create
+    @book = current_user.books.build(book_params)
+    if @book.save
+      render json: { book: @book, message: 'Book added successfully!' }, status: :created
+    else
+      render json: { errors: @book.errors.full_messages }, status: :unprocessable_entity
     end
-  
-    def show
-      @book = Book.find(params[:id])
-      @comments = @book.comments
-      @rating = @book.ratings.find_by(user_id: session[:user_id])
+  end
+
+  def edit
+    @book = current_user.books.find(params[:id])
+    render json: @book
+  end
+
+  def update
+    @book = current_user.books.find(params[:id])
+    if @book.update(book_params)
+      render json: { book: @book, message: 'Book Updated successfully!' }, status: :created
+    else
+      render json: { errors: @book.errors.full_messages }, status: :unprocessable_entity
     end
-  
-    def new
-      @book = Book.new
-    end
-  
-    def create
-      @book = current_user.books.build(book_params)
-      if @book.save
-        redirect_to @book, notice: 'Book added successfully!'
-      else
-        render :new
-      end
-    end
-  
-    def edit
-      @book = current_user.books.find(params[:id])
-    end
-  
-    def update
-      @book = current_user.books.find(params[:id])
-      if @book.update(book_params)
-        redirect_to @book, notice: 'Book updated successfully!'
-      else
-        render :edit
-      end
-    end
-  
-    def destroy
-      @book = current_user.books.find(params[:id])
-      @book.destroy
-      redirect_to books_path, notice: 'Book deleted successfully!'
-    end
-  
-    private
-  
-    def book_params
-      params.require(:book).permit(:title, :img, :bookLink, :description)
-    end
-    
+  end
+
+  def destroy
+    @book = current_user.books.find(params[:id])
+    @book.destroy
+    render json: { message: 'Book deleted successfully!' }
+
+  end
+
+  private
+
+  def book_params
+    params.require(:book).permit(:title, :img, :bookLink, :description)
+  end
 end

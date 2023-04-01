@@ -4,18 +4,16 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email])
     if user && user.authenticate(params[:password])
       session[:user_id] = user.id
-      redirect_to root_path, notice: 'Logged in successfully!'
+      puts "User session created with user_id #{user.id}"
+      render json: { user_id: user.id, name: user.username}, status: :ok
     else
-      flash.now[:alert] = 'Invalid email or password'
-      render :new
+      render json: { alert: 'Invalid email or password' }, status: :unauthorized
     end
   end
 
   def destroy
     session[:user_id] = nil
-    redirect_to root_path, notice: 'Logged out successfully!'
+    render json: { notice: 'Logged out successfully!' }, status: :ok
   end
   
 end
-
-
