@@ -7,15 +7,15 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 # Create some users with hashed passwords
-user1 = User.create(username: 'johndoe', email: 'johndoe@example.com', password_digest: BCrypt::Password.create('password123'))
-user2 = User.create(username: 'janedoe', email: 'janedoe@example.com', password_digest: BCrypt::Password.create('password456'))
+user1 = User.create(username: 'johndoe', email: 'johndoe@example.com', password: 'password123', password_confirmation: 'password123')
+user2 = User.create(username: 'janedoe', email: 'janedoe@example.com', password: 'password456', password_confirmation: 'password456')
 
+# Save the users before creating books
+[user1, user2].each(&:save!)
 
-
-# Create some books
-book1 = user1.books.create(title: 'The Color Purple', img: 'https://i.pinimg.com/564x/eb/95/ef/eb95efe525990fc784a159da12f39007.jpg', bookLink: 'https://www.amazon.com/Color-Purple-Alice-Walker/dp/0156031825', description: 'The Color Purple is a 1982 epistolary novel by American author Alice Walker which won the 1983 Pulitzer Prize for Fiction and the National Book Award for Fiction.', user: user1)
-book2 = user2.books.create(title: 'The Bluest Eye', img: 'https://www.pbs.org/wgbh/americanexperience/media/filer_public_thumbnails/filer_public/c5/d8/c5d80c46-10bd-43e2-b017-9bd5e6fa880e/bluesteye-feature.jpg__400x616_q85_crop_subsampling-2_upscale.jpg', bookLink: 'https://www.amazon.com/Bluest-Eye-Vintage-International/dp/0307278441', description: 'The Bluest Eye is Toni Morrison\'s first novel, a book heralded for its richness of language and boldness of vision.', user: user2)
-
+# Create some books for the users
+book1 = user1.books.create(title: 'The Color Purple', img: 'https://i.pinimg.com/564x/eb/95/ef/eb95efe525990fc784a159da12f39007.jpg', bookLink: 'https://www.amazon.com/Color-Purple-Alice-Walker/dp/0156031825', description: 'The Color Purple is a 1982 epistolary novel by American author Alice Walker which won the 1983 Pulitzer Prize for Fiction and the National Book Award for Fiction.')
+book2 = user2.books.create(title: 'The Bluest Eye', img: 'https://www.pbs.org/wgbh/americanexperience/media/filer_public_thumbnails/filer_public/c5/d8/c5d80c46-10bd-43e2-b017-9bd5e6fa880e/bluesteye-feature.jpg__400x616_q85_crop_subsampling-2_upscale.jpg', bookLink: 'https://www.amazon.com/Bluest-Eye-Vintage-International/dp/0307278441', description: 'The Bluest Eye is Toni Morrison\'s first novel, a book heralded for its richness of language and boldness of vision.')
 
 # Create some comments
 comment1 = Comment.create(content: 'I loved this book!', book: book1, user: user1)
@@ -24,3 +24,4 @@ comment2 = Comment.create(content: 'This book was really inspiring.', book: book
 # Create some ratings
 rating1 = Rating.create(value: 4, book: book1)
 rating2 = Rating.create(value: 5, book: book2)
+
