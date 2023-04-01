@@ -1,59 +1,58 @@
 class BooksController < ApplicationController
-  before_action :require_login, only: [:new, :create, :edit, :update, :destroy]
+  # before_action :authorize, only: [:create, :destroy, :update]
+  before_action :set_book, only: [:show, :update, :destroy]
 
   def index
-    books = Book.includes(:comments, :user)
-    render json: books.as_json(include: { 
-      comments: { 
-        include: { user: { only: [:username] } } 
-      }, 
-      user: { only: [:username] }
-    })
+    books = Book.includes(:comments)
+    render json: books.as_json(include: { comments: { include: { user: { only: [:username] } } } })
   end
   
+
   def show
     book = Book.includes(:comments, :user).find(params[:id])
     render json: book.as_json(include: { comments: { include: { user: { only: [:username] } } }, user: { only: [:username] } })
   end
-
-  def new
-    @book = Book.new
-    render json: @book
-  end
+  
 
   def create
-    @book = current_user.books.build(book_params)
-    if @book.save
-      render json: { book: @book, message: 'Book added successfully!' }, status: :created
+    book = Book.create(book_params)
+   
+    if book.persisted?
+      render json: book, status: :created, location: book
     else
-      render json: { errors: @book.errors.full_messages }, status: :unprocessable_entity
+      render json: book.errors, status: :unprocessable_entity
     end
   end
-
-  def edit
-    @book = current_user.books.find(params[:id])
-    render json: @book
-  end
+  
+  
+  
+  
 
   def update
-    @book = current_user.books.find(params[:id])
-    if @book.update(book_params)
-      render json: { book: @book, message: 'Book Updated successfully!' }, status: :created
+    book = Book.update(book_params)
+    if book.persisted?
+      render json: book
     else
-      render json: { errors: @book.errors.full_messages }, status: :unprocessable_entity
+      render json: book.errors, status: :unprocessable_entity
     end
   end
-
+  
   def destroy
-    @book = current_user.books.find(params[:id])
-    @book.destroy
-    render json: { message: 'Book deleted successfully!' }
-
+    book.destroy
   end
+  
 
   private
 
+  def set_book
+    book = Book.find(params[:id])
+  end      
+
   def book_params
-    params.require(:book).permit(:title, :img, :bookLink, :description)
+    params.require(:book).permit(:title, :img, :bookLink, :description, :user_Id).tap do |whitelisted|
+      whitelisted[:user_id] = params[:user_Id]
+    end
   end
+  
 end
+

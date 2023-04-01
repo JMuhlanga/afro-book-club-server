@@ -22,12 +22,9 @@ Rails.application.routes.draw do
   put '/books/:id', to: 'books#update'
   delete '/books/:id', to: 'books#destroy'
 
-  post '/books/:book_id/comments', to: 'comments#create', as: 'book_comments'
-  delete '/comments/:id', to: 'comments#destroy', as: 'comment'
-
-  post '/books/:book_id/ratings', to: 'ratings#create', as: 'book_ratings'
-  patch '/ratings/:id', to: 'ratings#update', as: 'rating'
-  delete '/ratings/:id', to: 'ratings#destroy'
+ resources :comments
+  
+  resources :ratings
 
   
 end
