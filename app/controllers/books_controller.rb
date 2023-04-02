@@ -6,6 +6,11 @@ class BooksController < ApplicationController
     books = Book.includes(:comments)
     render json: books.as_json(include: { comments: { include: { user: { only: [:username] } } } })
   end
+
+  def user_books
+    books = Book.includes(:comments, :user).where(user_id: params[:user_id])
+    render json: books.as_json(include: { comments: { include: { user: { only: [:username] } } }, user: { only: [:username] } })
+  end
   
 
   def show

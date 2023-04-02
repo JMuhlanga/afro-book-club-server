@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   put '/books/:id', to: 'books#update'
   delete '/books/:id', to: 'books#destroy'
 
+  # route for user_books action
+  get '/users/:user_id/books', to: 'books#user_books', as: 'user_books'
+
  resources :comments
   
   resources :ratings
